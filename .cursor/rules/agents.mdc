@@ -1,0 +1,10 @@
+---
+description: Project rules for DA-TDMPC2 (humans and AI agents)
+globs:
+alwaysApply: true
+---
+
+Read and follow `AGENTS.md` at the repository root before doing anything else.
+It defines file ownership, the start/end-of-session protocols, the zero-hallucination rule
+(numbers only from `results/`, unverified facts marked `<!-- VERIFY -->`), and the Windows rules.
+`third_party/tdmpc2/` is read-only.

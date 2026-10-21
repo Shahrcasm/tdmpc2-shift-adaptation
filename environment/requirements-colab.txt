@@ -1,0 +1,20 @@
+# DA-TDMPC2 — Google Colab (T1) / Kaggle (T1b) requirements. See docs/RUNS.md Step 3.
+#
+# torch is installed in a separate notebook cell so the GPU build matching upstream is used:
+#   !pip install -q torch==2.7.1
+# VERIFY at run time: `!python --version` and `!pip show torch` in the Colab session.
+# numpy differs from requirements-cpu.txt (1.24.4 has no Python 3.12 wheel; 1.26.4 has
+# wheels for 3.11 and 3.12). If Colab's Python is 3.13+, mujoco==3.1.2 has no wheel -
+# record the problem in docs/STATUS.md and ask M1 before changing any pin.
+numpy==1.26.4
+mujoco==3.1.2
+dm-control==1.0.16
+gymnasium==0.29.1
+tensordict==0.8.3
+hydra-core==1.3.2
+omegaconf==2.3.0
+termcolor==2.4.0
+pandas
+pyyaml
+scipy
+matplotlib

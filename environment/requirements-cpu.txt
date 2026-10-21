@@ -1,0 +1,31 @@
+# DA-TDMPC2 — laptop (T0, native Windows) and CI requirements. Python 3.11.
+# Pins follow upstream third_party/tdmpc2/docker/environment.yaml (commit e9f5932),
+# restricted to what DMControl evaluation needs (no wandb, submitit, video libs, kornia,
+# torchrl, h5py, Meta-World, ManiSkill2, MyoSuite, mujoco-py).
+#
+# Install order (PowerShell, inside `.\.venv\Scripts\Activate.ps1` or conda):
+#   pip install torch==2.7.1 --index-url https://download.pytorch.org/whl/cpu
+#   pip install -r environment/requirements-cpu.txt
+#   pip install -e . --no-deps
+#
+# The extra index below makes pip resolve the CPU-only torch build if torch was not
+# installed first (on Linux the default PyPI wheel would pull CUDA libraries).
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.7.1
+
+# Upstream pins (docker/environment.yaml)
+numpy==1.24.4
+mujoco==3.1.2
+dm-control==1.0.16
+gymnasium==0.29.1
+tensordict==0.8.3
+hydra-core==1.3.2
+omegaconf==2.3.0
+termcolor==2.4.0
+pandas==2.0.3
+
+# Our additions (not in upstream)
+pyyaml
+scipy
+matplotlib
+pytest

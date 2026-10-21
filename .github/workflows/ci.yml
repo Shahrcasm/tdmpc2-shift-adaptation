@@ -1,0 +1,66 @@
+# CI for DA-TDMPC2 (owner: M1).
+# Branch protection on `main` requires the check named `tests` (shown as "ci / tests").
+# A matrix job reports one check per OS (e.g. "test-matrix (windows-latest)"), never a single
+# "tests" check, so the aggregator job `tests` below succeeds only if every matrix leg passed.
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test-matrix:
+    name: test-matrix (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    env:
+      MUJOCO_GL: disable      # physics only; no rendering on CI
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"   # upstream docker/environment.yaml pins python=3.11
+          cache: pip
+          cache-dependency-path: environment/requirements-cpu.txt
+
+      - name: Install CPU torch
+        run: python -m pip install torch==2.7.1 --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Install requirements
+        run: python -m pip install -r environment/requirements-cpu.txt
+
+      - name: Install datdmpc (editable)
+        run: python -m pip install -e . --no-deps
+
+      - name: Unit tests
+        run: python -m pytest -q
+
+      - name: Smoke test (tiny random model, no checkpoint)
+        run: python scripts/smoke_test.py --mode tiny
+
+  tests:
+    name: tests
+    needs: test-matrix
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every matrix leg to pass
+        run: |
+          echo "test-matrix result: ${{ needs.test-matrix.result }}"
+          test "${{ needs.test-matrix.result }}" = "success"

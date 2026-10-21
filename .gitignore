@@ -1,0 +1,55 @@
+# --- Large / private artifacts (never commit) ---
+checkpoints/*
+!checkpoints/MANIFEST.csv
+*.pt
+*.pth
+*.ckpt
+*.npz
+outputs/
+logs/
+videos/
+wandb/
+*.mp4
+*.gif
+.env
+.env.*
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Notebooks ---
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# --- Hydra (if upstream entry points are ever run locally; outputs/ is ignored above) ---
+multirun/
+
+# --- LaTeX build files ---
+report/**/*.aux
+report/**/*.log
+report/**/*.out
+report/**/*.bbl
+report/**/*.blg
+report/**/*.synctex.gz
+report/**/*.fdb_latexmk
+report/**/*.fls
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+
+# Files larger than 5 MB must not be committed; git cannot enforce size by pattern,
+# so the integrator checks the byte size of every changed file at merge time (AGENTS.md §7).

@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "datdmpc"
+version = "0.1.0"
+description = "DA-TDMPC2: shift detection and task-embedding test-time adaptation for TD-MPC2 on DMControl (CSE 465)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+# Dependencies are pinned in environment/requirements-*.txt; install those first,
+# then `pip install -e . --no-deps`.
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

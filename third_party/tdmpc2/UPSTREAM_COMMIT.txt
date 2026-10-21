@@ -1,0 +1,27 @@
+Upstream repository : https://github.com/nicklashansen/tdmpc2
+Pinned commit       : e9f59321933cbc8e11a002b842adc7d4ffae8ff1
+Commit date         : 2026-07-13
+Commit message      : fix q ensemble weight init
+Vendored on         : 2026-10-21 (task T001)
+License             : MIT (see LICENSE in this folder; copyright Nicklas Hansen 2023)
+
+Included (verbatim, unmodified):
+  tdmpc2/            upstream source package (code, config.yaml, custom DMControl task XMLs)
+  docker/            environment.yaml, Dockerfile, nvidia_icd.json (dependency reference)
+  LICENSE, README.md, CONTRIBUTING.md
+
+Excluded (not needed for this project; reproduce with the command below if ever required):
+  assets/            demo GIFs/PNG (~MBs)
+  results/           upstream baseline learning-curve CSVs (SAC, DreamerV3, TD-MPC, TD-MPC2)
+  datasets/          shell scripts that download the mt30/mt80 training datasets (we never download these)
+  nautilus/          upstream cluster launcher
+  .gitignore
+
+READ-ONLY POLICY: never edit files in third_party/tdmpc2/. Extend behaviour by subclassing or
+wrapping from src/datdmpc/. To re-vendor at a new commit, M1 opens a dedicated PR that replaces
+this folder wholesale and updates this file.
+
+Re-create this folder exactly:
+  git clone https://github.com/nicklashansen/tdmpc2.git
+  git -C tdmpc2 checkout e9f59321933cbc8e11a002b842adc7d4ffae8ff1
+  copy tdmpc2/tdmpc2, tdmpc2/docker, LICENSE, README.md, CONTRIBUTING.md into third_party/tdmpc2/
