@@ -8,7 +8,10 @@ every file's sha256 against the value published by Hugging Face (see docs/RUNS.m
 from __future__ import annotations
 
 import argparse
+import csv
+import hashlib
 import sys
+import urllib.request
 from pathlib import Path
 
 try:
@@ -26,11 +29,72 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--verify-only", action="store_true", help="only re-check sha256 of existing files")
     return p
 
+def compute_sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        while chunk := f.read(65536):
+            h.update(chunk)
+    return h.hexdigest().lower()
+
+
+def load_manifest(manifest_path: Path) -> dict[str, dict]:
+    if not manifest_path.is_file():
+        raise FileNotFoundError(f"Manifest not found at {manifest_path}")
+    records = {}
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            records[row["name"].replace(".pt", "")] = row
+            records[row["name"]] = row
+    return records
+
+
+def download_file(url: str, dest: Path) -> None:
+    print(f"[get_checkpoints] Downloading from {url}...")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    urllib.request.urlretrieve(url, dest)
+    print(f"[get_checkpoints] Saved to {dest}")
+
 
 def main(argv=None) -> int:
-    build_parser().parse_args(argv)
-    return not_implemented("scripts/get_checkpoints.py", "T005", "M1")
+    args = build_parser().parse_args(argv)
+    dest_dir = Path(args.dest)
+    manifest_path = Path("checkpoints/MANIFEST.csv")
+    manifest = load_manifest(manifest_path)
 
+    for model_name in args.models:
+        if model_name not in manifest:
+            print(f"[get_checkpoints] ERROR: Unknown model '{model_name}'. Available: mt30-5M, mt30-19M", file=sys.stderr)
+            return 1
+
+        info = manifest[model_name]
+        filename = info["name"]
+        expected_hash = info["sha256"].lower()
+        target_path = dest_dir / filename
+
+        if args.verify_only or target_path.is_file():
+            if not target_path.is_file():
+                print(f"[get_checkpoints] ERROR: File missing for verification: {target_path}", file=sys.stderr)
+                return 1
+            print(f"[get_checkpoints] Verifying sha256 for {filename}...")
+            actual_hash = compute_sha256(target_path)
+            if actual_hash != expected_hash:
+                print(f"[get_checkpoints] FAILED: sha256 mismatch for {filename}!", file=sys.stderr)
+                print(f"  Expected: {expected_hash}", file=sys.stderr)
+                print(f"  Actual:   {actual_hash}", file=sys.stderr)
+                return 1
+            print(f"[get_checkpoints] {filename}: OK (sha256 matches)")
+        else:
+            download_file(info["url"], target_path)
+            print(f"[get_checkpoints] Verifying sha256 for downloaded {filename}...")
+            actual_hash = compute_sha256(target_path)
+            if actual_hash != expected_hash:
+                print(f"[get_checkpoints] FAILED: sha256 mismatch for downloaded {filename}!", file=sys.stderr)
+                return 1
+            print(f"[get_checkpoints] {filename}: OK (verified)")
+
+    print("[get_checkpoints] All requested checkpoints are present and verified.")
+    return 0
 
 if __name__ == "__main__":
     raise SystemExit(main())

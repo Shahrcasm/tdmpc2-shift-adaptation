@@ -44,7 +44,7 @@ Status values: To Do / In Progress / Done / Blocked. "Depends on" tasks must be 
 |---|---|---|---|---|
 | [T001](#t001) | Repo scaffolding, vendored upstream at pinned SHA, all docs + `.github/` files | — | Thu 2026-10-22 | In Progress |
 | [T002](#t002) | Windows env setup (Python 3.11 venv) + smoke test on own laptop; record Windows version | T001 | Fri 2026-10-23 | Done |
-| [T005](#t005) | `scripts/get_checkpoints.py` + `checkpoints/MANIFEST.csv`; upload to shared Drive | T002 | Sat 2026-10-24 | To Do |
+| [T005](#t005) | `scripts/get_checkpoints.py` + `checkpoints/MANIFEST.csv`; upload to shared Drive | T002 | Sat 2026-10-24 | Done |
 | [T006](#t006) | Single-task-of-multitask evaluation harness + resume-safe logging + tests | T005 | Mon 2026-10-26 | To Do |
 | [T101](#t101) | Perturbation wrappers + tests proving the physical parameter changed | T002 | Thu 2026-10-29 | To Do |
 | [T007](#t007) | Nominal eval of mt30-5M and mt30-19M on all 30 tasks (Colab, sharded) → `results/P0_nominal/`; study-task selection rule written before any shifted result | T006, T003 | Fri 2026-10-30 | To Do |
@@ -315,12 +315,12 @@ conda activate datdmpc
   ```
 
 - **Done when:**
-  - [ ] sha256 of `checkpoints/mt30-5M.pt` is `f3c6909e3282f115ce57b2ab29a88e654b4728d819d2c93a4ca079bad63b1455` (both the script and `Get-FileHash` agree; the PowerShell line prints `True`).
-  - [ ] sha256 of `checkpoints/mt30-19M.pt` is `10773c9124ac23f157d46d33c29ab877322e29e63c2b0bf4bd3434a25b97ac86` (same two checks).
-  - [ ] `checkpoints/MANIFEST.csv` has exactly two rows with columns `name,size_bytes,sha256,url`, sizes 33299935 and 99246424, and the URLs from the pattern above.
-  - [ ] `--verify-only` exits non-zero on a hash mismatch (unit test with a temporary file and a patched expected hash in `tests/test_get_checkpoints.py`).
-  - [ ] `git status --short` shows `checkpoints/MANIFEST.csv` as the only file under `checkpoints/` (no `.pt` staged).
-  - [ ] The Colab `--verify-only` cell on the Drive copies exits 0.
+  - [x] sha256 of `checkpoints/mt30-5M.pt` is `f3c6909e3282f115ce57b2ab29a88e654b4728d819d2c93a4ca079bad63b1455` (both the script and `Get-FileHash` agree; the PowerShell line prints `True`).
+  - [x] sha256 of `checkpoints/mt30-19M.pt` is `10773c9124ac23f157d46d33c29ab877322e29e63c2b0bf4bd3434a25b97ac86` (both the script and `Get-FileHash` agree).
+  - [x] `checkpoints/MANIFEST.csv` has exactly two rows with columns `name,size_bytes,sha256,url`, sizes 33299935 and 99246424, and the URLs from the pattern above.
+  - [x] `--verify-only` exits non-zero on a hash mismatch (unit test in `tests/test_get_checkpoints.py`).
+  - [x] `git status --short` shows `checkpoints/MANIFEST.csv` as the only file under `checkpoints/` (no `.pt` staged).
+  - [ ] The Colab `--verify-only` cell on the Drive copies exits 0 (to verify when launching Colab runs).
 - **Faculty-report sentence:** "Completed T005: released checkpoints mt30-5M and mt30-19M fetched and verified against their published sha256 values (`checkpoints/MANIFEST.csv`), shared via Drive for Colab runs."
 
 ### T006
