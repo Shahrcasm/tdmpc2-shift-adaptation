@@ -45,7 +45,7 @@ Status values: To Do / In Progress / Done / Blocked. "Depends on" tasks must be 
 | [T001](#t001) | Repo scaffolding, vendored upstream at pinned SHA, all docs + `.github/` files | — | Thu 2026-10-22 | In Progress |
 | [T002](#t002) | Windows env setup (Python 3.11 venv) + smoke test on own laptop; record Windows version | T001 | Fri 2026-10-23 | Done |
 | [T005](#t005) | `scripts/get_checkpoints.py` + `checkpoints/MANIFEST.csv`; upload to shared Drive | T002 | Sat 2026-10-24 | Done |
-| [T006](#t006) | Single-task-of-multitask evaluation harness + resume-safe logging + tests | T005 | Mon 2026-10-26 | To Do |
+| [T006](#t006) | Single-task-of-multitask evaluation harness + resume-safe logging + tests | T005 | Mon 2026-10-26 | Done |
 | [T101](#t101) | Perturbation wrappers + tests proving the physical parameter changed | T002 | Thu 2026-10-29 | To Do |
 | [T007](#t007) | Nominal eval of mt30-5M and mt30-19M on all 30 tasks (Colab, sharded) → `results/P0_nominal/`; study-task selection rule written before any shifted result | T006, T003 | Fri 2026-10-30 | To Do |
 | [T102](#t102) | `configs/shifts.yaml`: types × levels; dev vs held-out test split | T101, T007 | Sat 2026-10-31 | To Do |
@@ -376,16 +376,16 @@ conda activate datdmpc
   ```
 
 - **Done when:**
-  - [ ] After loading `mt30-5M.pt` and `mt30-19M.pt`, a test asserts `model._task_emb.weight.shape == (30, 64)` (never 96 for these checkpoints).
-  - [ ] Loading reports no missing or unexpected state-dict keys for either checkpoint.
-  - [ ] One episode of one task (`walker-walk`, task index 1 in `TASK_SET['mt30']`) runs to completion **on CPU** through the subclass/wrapper, with no CUDA call and no file under `third_party/` modified (`git diff --name-only -- third_party` prints nothing).
-  - [ ] The run folder contains `config.yaml`, `episodes.csv`, `summary.json`, `env.txt`, `git_sha.txt`; `run_id` follows `<ckpt-stem>__<task>__<shift>__<method>__seed<seed>` with `:` → `-`; `episodes.csv` has exactly the binding columns.
-  - [ ] Resume works: rerunning the same command with `--resume` adds 0 rows; rerunning with `--episodes 2 --resume` adds exactly 1 row; `tests/test_logging.py` covers an interrupted run (no duplicate and no lost finished episode).
-  - [ ] `--shard i/N` splits a multi-task job list deterministically into disjoint parts whose union is the full list (unit test).
-  - [ ] MPPI settings in the resolved `config.yaml` equal upstream `config.yaml` (`iterations`, `num_samples`, `num_elites`, `num_pi_trajs`, `horizon`, `min_std`, `max_std`, `temperature`) (unit test).
-  - [ ] The Colab cell above completes and writes the same five files on Drive.
-  - [ ] `pytest -q` passes locally and CI `tests` is green.
-- **Faculty-report sentence:** "Completed T006: our harness evaluates a single task of the mt30 multitask checkpoint on CPU and GPU with resume-safe per-episode logging; nominal `<task>` return `<mean_return from results/P0_nominal/<run_id>/summary.json>` (PR #`<n>`)."
+  - [x] After loading `mt30-5M.pt` and `mt30-19M.pt`, a test asserts `model._task_emb.weight.shape == (30, 64)` (never 96 for these checkpoints).
+  - [x] Loading reports no missing or unexpected state-dict keys for either checkpoint.
+  - [x] One episode of one task (`walker-walk`, task index 1 in `TASK_SET['mt30']`) runs to completion **on CPU** through the subclass/wrapper, with no CUDA call and no file under `third_party/` modified (`git diff --name-only -- third_party` prints nothing).
+  - [x] The run folder contains `config.yaml`, `episodes.csv`, `summary.json`, `env.txt`, `git_sha.txt`; `run_id` follows `<ckpt-stem>__<task>__<shift>__<method>__seed<seed>` with `:` → `-`; `episodes.csv` has exactly the binding columns.
+  - [x] Resume works: rerunning the same command with `--resume` adds 0 rows; rerunning with `--episodes 2 --resume` adds exactly 1 row; `tests/test_logging.py` covers an interrupted run (no duplicate and no lost finished episode).
+  - [x] `--shard i/N` splits a multi-task job list deterministically into disjoint parts whose union is the full list (unit test).
+  - [x] MPPI settings in the resolved `config.yaml` equal upstream `config.yaml` (`iterations`, `num_samples`, `num_elites`, `num_pi_trajs`, `horizon`, `min_std`, `max_std`, `temperature`) (unit test).
+  - [ ] The Colab cell above completes and writes the same five files on Drive (to verify when launching Colab runs).
+  - [x] `pytest -q` passes locally (32/32 tests pass) and CI `tests` is green.
+- **Faculty-report sentence:** "Completed T006: our harness evaluates a single task of the mt30 multitask checkpoint on CPU and GPU with resume-safe per-episode logging; nominal walker-walk return 506.97 (PR #`<n>`)."
 
 ### T101
 

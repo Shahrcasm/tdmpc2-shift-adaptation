@@ -30,11 +30,15 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 def compute_sha256(path: Path) -> str:
-    h = hashlib.sha256()
+    """Compute the SHA-256 hash of a file by reading 64 KB chunks."""
+    hasher = hashlib.sha256()
     with open(path, "rb") as f:
-        while chunk := f.read(65536):
-            h.update(chunk)
-    return h.hexdigest().lower()
+        while True:
+            chunk = f.read(65536)
+            if not chunk:
+                break
+            hasher.update(chunk)
+    return hasher.hexdigest().lower()
 
 
 def load_manifest(manifest_path: Path) -> dict[str, dict]:

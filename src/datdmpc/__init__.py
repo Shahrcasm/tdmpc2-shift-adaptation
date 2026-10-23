@@ -24,7 +24,11 @@ def _is_scripts_dir(entry: str) -> bool:
         return False
 
 
-sys.path[:] = [entry for entry in sys.path if not _is_scripts_dir(entry)]
+clean_entries = []
+for entry in sys.path:
+    if not _is_scripts_dir(entry):
+        clean_entries.append(entry)
+sys.path[:] = clean_entries
 
 #: Exit code used by every not-yet-implemented script or module entry point.
 NOT_IMPLEMENTED_EXIT_CODE = 3
