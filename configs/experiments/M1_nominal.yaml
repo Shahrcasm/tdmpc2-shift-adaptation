@@ -1,0 +1,15 @@
+# Experiment configuration: Nominal evaluation of MT30 checkpoints (Task T007, owner M1)
+phase: P0_nominal
+checkpoints:
+  - checkpoints/mt30-19M.pt
+  - checkpoints/mt30-5M.pt
+tasks: all
+shift: none
+episodes_per_task: 10
+seeds:
+  - 0
+  - 1
+  - 2
+output_dir: results/P0_nominal
+tier: T1
+device: cuda

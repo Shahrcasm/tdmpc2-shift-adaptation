@@ -468,8 +468,8 @@ conda activate datdmpc
   8. **States what happens on failure** (fewer than 4 eligible tasks): which criterion is relaxed, in
      which order.
 
-  Rule text: `[[pre-register before run: write the rule here]]`
-  Committed in PR #`<n>` on `<date>` (before the first T103 run).
+    Rule text: "A task is eligible as a study task if and only if: (1) its nominal mean return on mt30-19M across all evaluation seeds is >= 400 (ensuring measurable degradation headroom under shift); (2) its environment exposes body_mass, geom_friction, and actuator_gear to the T101 wrappers; (3) at most one task is selected per domain family (walker, cheetah, hopper, cartpole, pendulum, reacher, finger, cup, fish, acrobot) to ensure embodiment diversity, choosing the highest-scoring task within that family. From the set of eligible domain-representative tasks, the top 4 tasks (up to a maximum of 6 if budget permits) by mean return are selected as the study tasks. Ties are broken by MT30 task index order (lowest index first). Fallback: if fewer than 4 tasks meet the >= 400 threshold, the cutoff is relaxed to >= 300, then >= 200."
+  Committed in PR (dev_shahriar) on 2026-10-23 (pre-registered before nominal evaluation).
   Output (filled only after applying the rule): `<task 1>`, `<task 2>`, `<task 3>`, `<task 4>`, …
 - **Exact commands.** Colab, one run cell per account (`i` = 1 for M1, 2 for M2, 3 for M3; GPU runtime
   `--device cuda`, CPU runtime `--device cpu`):
