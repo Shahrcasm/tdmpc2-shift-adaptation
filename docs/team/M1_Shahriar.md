@@ -46,7 +46,7 @@ Status values: To Do / In Progress / Done / Blocked. "Depends on" tasks must be 
 | [T002](#t002) | Windows env setup (Python 3.11 venv) + smoke test on own laptop; record Windows version | T001 | Fri 2026-10-23 | Done |
 | [T005](#t005) | `scripts/get_checkpoints.py` + `checkpoints/MANIFEST.csv`; upload to shared Drive | T002 | Sat 2026-10-24 | Done |
 | [T006](#t006) | Single-task-of-multitask evaluation harness + resume-safe logging + tests | T005 | Mon 2026-10-26 | Done |
-| [T101](#t101) | Perturbation wrappers + tests proving the physical parameter changed | T002 | Thu 2026-10-29 | To Do |
+| [T101](#t101) | Perturbation wrappers + tests proving the physical parameter changed | T002 | Thu 2026-10-29 | Done |
 | [T007](#t007) | Nominal eval of mt30-5M and mt30-19M on all 30 tasks (Colab, sharded) → `results/P0_nominal/`; study-task selection rule written before any shifted result | T006, T003 | Fri 2026-10-30 | To Do |
 | [T102](#t102) | `configs/shifts.yaml`: types × levels; dev vs held-out test split | T101, T007 | Sat 2026-10-31 | To Do |
 | [T104](#t104) | Ranking-fidelity diagnostic, nominal vs shifted → `results/P1_ranking/` | T006, T101 | Tue 2026-11-03 | To Do |
@@ -418,15 +418,15 @@ conda activate datdmpc
   ```
 
 - **Done when:**
-  - [ ] `parse_shift` accepts every type of the grammar and `none`, and rejects unknown types or malformed levels (test).
-  - [ ] For each of `mass`, `friction`, `actuator`, `gravity`: after applying `<type>:k` with k ≠ 1, the corresponding `physics.model` array equals k × the nominal array (exact or `allclose`), on at least two mt30 domains, one of them a custom task from `third_party/tdmpc2/tdmpc2/envs/tasks/` (test per type).
-  - [ ] For each physical type, `<type>:1.0` leaves the array identical to nominal (test).
-  - [ ] Each physical change survives `env.reset()` and persists for the whole episode (test).
-  - [ ] `obs_noise:<std>` with std > 0 changes observations relative to an un-noised env with the same seed, and `obs_noise:0` does not (test).
-  - [ ] `action_delay:<d>` makes the action applied at agent step t equal the action issued at step t − d (test with a scripted action sequence).
-  - [ ] Mid-episode injection: applying a shift at step `t_inject` leaves steps before `t_inject` identical to a nominal run with the same seed (test).
-  - [ ] `python scripts/smoke_test.py --mode full ...` (after T006 is merged) exits 0 and prints `[smoke] OK`.
-  - [ ] `pytest -q` passes and CI `tests` is green.
+  - [x] `parse_shift` accepts every type of the grammar and `none`, and rejects unknown types or malformed levels (test).
+  - [x] For each of `mass`, `friction`, `actuator`, `gravity`: after applying `<type>:k` with k ≠ 1, the corresponding `physics.model` array equals k × the nominal array (exact or `allclose`), on at least two mt30 domains, one of them a custom task from `third_party/tdmpc2/tdmpc2/envs/tasks/` (test per type).
+  - [x] For each physical type, `<type>:1.0` leaves the array identical to nominal (test).
+  - [x] Each physical change survives `env.reset()` and persists for the whole episode (test).
+  - [x] `obs_noise:<std>` with std > 0 changes observations relative to an un-noised env with the same seed, and `obs_noise:0` does not (test).
+  - [x] `action_delay:<d>` makes the action applied at agent step t equal the action issued at step t − d (test with a scripted action sequence).
+  - [x] Mid-episode injection: applying a shift at step `t_inject` leaves steps before `t_inject` identical to a nominal run with the same seed (test).
+  - [x] `python scripts/smoke_test.py --mode full ...` (after T006 is merged) exits 0 and prints `[smoke] OK`.
+  - [x] `pytest -q` passes and CI `tests` is green.
 - **Faculty-report sentence:** "Completed T101: six shift types implemented as wrappers on DMControl; unit tests confirm each physical parameter (mass, friction, actuator gear, gravity) is changed by exactly the requested factor (`tests/test_perturb.py`, PR #`<n>`)."
 
 ### T007
