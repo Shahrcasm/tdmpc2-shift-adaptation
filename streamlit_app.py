@@ -62,13 +62,15 @@ def get_cached_agent():
             raise RuntimeError("Failed to download and verify checkpoint mt30-5M.pt")
 
     agent = load_agent(ckpt_path, device="cpu")
+    agent._original_embedding_table = agent.model._task_emb.weight.data.clone().cpu()
     return agent
 
 
-@st.cache_data(show_spinner=False)
-def get_original_embedding_table(_agent) -> torch.Tensor:
-    """Save a clean copy of the original 30x64 task embedding table."""
-    return _agent.model._task_emb.weight.data.clone().cpu()
+def get_original_embedding_table(agent) -> torch.Tensor:
+    """Return a clean copy of the original 30x64 task embedding table."""
+    if hasattr(agent, "_original_embedding_table"):
+        return agent._original_embedding_table.clone()
+    return agent.model._task_emb.weight.data.clone().cpu()
 
 
 # ---------------------------------------------------------------------------
@@ -201,8 +203,9 @@ def main() -> None:
     original_table = get_original_embedding_table(agent)
 
     total_params = 0
-    for param in agent.model.parameters():
-        total_params = total_params + param.numel()
+    for name, param in agent.model.named_parameters():
+        if ".module." not in name and not getattr(param, "is_meta", False):
+            total_params = total_params + param.numel()
     embedding_dim = int(agent.model._task_emb.weight.shape[1])
 
     # -----------------------------------------------------------------------
@@ -469,5 +472,11 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    import traceback
+
+    try:
+        main()
+    except Exception as exc:
+        st.error(f"Application Error ({type(exc).__name__}): {exc}")
+        st.code(traceback.format_exc())
 

@@ -249,8 +249,14 @@ class DeviceAwareTDMPC2(TDMPC2):
         _upstream.ensure_upstream_on_path()
         from common.layers import api_model_conversion
 
-        state_dict = api_model_conversion(self.model.state_dict(), state_dict)
-        self.model.load_state_dict(state_dict)
+        raw_target_sd = self.model.state_dict()
+        clean_target_sd = {}
+        for key, val in raw_target_sd.items():
+            if ".module." not in key:
+                clean_target_sd[key] = val
+
+        state_dict = api_model_conversion(clean_target_sd, state_dict)
+        self.model.load_state_dict(state_dict, strict=False)
 
 
 def load_agent(ckpt: str | Path, model_size: int | None = None, device: str = "cpu") -> DeviceAwareTDMPC2:
