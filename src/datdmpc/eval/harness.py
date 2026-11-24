@@ -202,7 +202,9 @@ class DeviceAwareTDMPC2(TDMPC2):
 
         self.cfg = cfg
         self.device = torch.device(device)
-        self.model = WorldModel(cfg).to(self.device)
+        self.model = WorldModel(cfg)
+        if self.device.type != "cpu":
+            self.model = self.model.to(self.device)
         self.model.eval()
 
         self.scale = DeviceAwareRunningScale(cfg, self.device)

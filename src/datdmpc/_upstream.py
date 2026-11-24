@@ -132,7 +132,9 @@ def build_world_model(cfg: UpstreamCfg, device: str = "cpu"):
     ensure_upstream_on_path()
     from common.world_model import WorldModel  # upstream: tdmpc2/common/world_model.py
 
-    model = WorldModel(cfg).to(device)
+    model = WorldModel(cfg)
+    if str(device) != "cpu":
+        model = model.to(device)
     model.eval()
     return model
 
