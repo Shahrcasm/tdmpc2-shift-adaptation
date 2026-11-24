@@ -246,16 +246,36 @@ class DeviceAwareTDMPC2(TDMPC2):
         if "model" in state_dict:
             state_dict = state_dict["model"]
 
-        _upstream.ensure_upstream_on_path()
-        from common.layers import api_model_conversion
+        target_state_dict = self.model.state_dict()
+        if "_detach_Qs_params.0.weight" not in state_dict:
+            name_map = ["weight", "bias", "ln.weight", "ln.bias"]
+            new_state_dict = {}
 
-        raw_target_sd = self.model.state_dict()
-        clean_target_sd = {}
-        for key, val in raw_target_sd.items():
-            if ".module." not in key:
-                clean_target_sd[key] = val
+            for key, val in list(state_dict.items()):
+                if key.startswith("_Qs."):
+                    num = key[len("_Qs.params.") :]
+                    new_key = str(int(num) // 4) + "." + name_map[int(num) % 4]
+                    del state_dict[key]
+                    new_state_dict["_Qs.params." + new_key] = val
+                    new_state_dict["_detach_Qs_params." + new_key] = val
+                elif key.startswith("_target_Qs."):
+                    num = key[len("_target_Qs.params.") :]
+                    new_key = str(int(num) // 4) + "." + name_map[int(num) % 4]
+                    del state_dict[key]
+                    new_state_dict["_target_Qs_params." + new_key] = val
 
-        state_dict = api_model_conversion(clean_target_sd, state_dict)
+            for prefix in ("_Qs.", "_detach_Qs_", "_target_Qs_"):
+                for meta_key in ("__batch_size", "__device"):
+                    full_key = prefix + "params." + meta_key
+                    if full_key in target_state_dict:
+                        new_state_dict[full_key] = target_state_dict[full_key]
+
+            for buf_key in ("log_std_min", "log_std_dif", "_action_masks"):
+                if buf_key in target_state_dict:
+                    new_state_dict[buf_key] = target_state_dict[buf_key]
+
+            state_dict.update(new_state_dict)
+
         self.model.load_state_dict(state_dict, strict=False)
 
 
