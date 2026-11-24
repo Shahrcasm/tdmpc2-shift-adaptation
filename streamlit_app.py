@@ -31,7 +31,7 @@ import torch.nn.functional as F
 
 from datdmpc.adapt.embedding import adapt_embedding
 from datdmpc.eval.harness import MT30_TASKS, load_agent, make_task_env
-from scripts.get_checkpoints import download_and_verify
+from scripts import get_checkpoints
 
 
 # ---------------------------------------------------------------------------
@@ -57,11 +57,9 @@ def get_cached_agent():
     ckpt_path = ckpt_dir / "mt30-5M.pt"
 
     if not ckpt_path.is_file():
-        download_and_verify(
-            model_names=["mt30-5M"],
-            dest_dir=ckpt_dir,
-            verify_only=False,
-        )
+        exit_code = get_checkpoints.main(["--models", "mt30-5M", "--dest", str(ckpt_dir)])
+        if exit_code != 0:
+            raise RuntimeError("Failed to download and verify checkpoint mt30-5M.pt")
 
     agent = load_agent(ckpt_path, device="cpu")
     return agent
