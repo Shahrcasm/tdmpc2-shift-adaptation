@@ -1,0 +1,22 @@
+{
+  "run_id": "mt30-5M__walker-walk__mass-1.5__e_only_demo__seed0",
+  "checkpoint": "checkpoints/mt30-5M.pt",
+  "task": "walker-walk",
+  "shift": "mass:1.5",
+  "steps_per_phase": 5,
+  "grad_steps": 15,
+  "lr": 0.002,
+  "total_network_params": 5241066,
+  "adapted_embedding_params": 64,
+  "nominal_transition_mse": 0.000297,
+  "nominal_return_5steps": 6.31,
+  "shifted_unadapted_transition_mse": 0.000537,
+  "shifted_mse_increase_pct": 80.7,
+  "shifted_unadapted_return_5steps": 5.61,
+  "adapted_buffer_transition_mse": 0.000365,
+  "adapted_loss_reduction_pct": 32.0,
+  "adapted_rollout_transition_mse": 0.000203,
+  "adapted_return_5steps": 6.99,
+  "adaptation_wall_time_s": 0.27
+}
+
