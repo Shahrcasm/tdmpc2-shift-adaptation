@@ -348,6 +348,26 @@ def make_task_env(task: str, seed: int, shift: str = "none") -> SingleTaskMultit
 
     _upstream.configure_rendering(render=False)
     _upstream.ensure_upstream_on_path()
+
+    # Compatibility shims in case gymnasium >= 1.0 is installed in cloud environments
+    if not hasattr(gym.logger, "set_level"):
+        def _noop_set_level(level: int) -> None:
+            return None
+        gym.logger.set_level = _noop_set_level
+
+    if not hasattr(gym.Wrapper, "__getattr__"):
+        def _wrapper_getattr(self, name: str):
+            if name.startswith("_"):
+                raise AttributeError(name)
+            return getattr(self.env, name)
+        gym.Wrapper.__getattr__ = _wrapper_getattr
+
+    import envs.dmcontrol as _dmc
+    if not issubclass(_dmc.DMControlWrapper, gym.Env):
+        class _GymDMControlWrapper(_dmc.DMControlWrapper, gym.Env):
+            pass
+        _dmc.DMControlWrapper = _GymDMControlWrapper
+
     from envs import make_env
 
     cfg = _upstream.UpstreamCfg(task=task, obs="state", seed=seed, multitask=False)
